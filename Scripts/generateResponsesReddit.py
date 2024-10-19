@@ -1,42 +1,34 @@
+
 import pandas as pd
-import subprocess
+import requests
+import json
 import time
 
-def run_codellama2(text):
-    try:
-        result = subprocess.run(['ollama', 'run', 'codellama', text], capture_output=True, text=True, timeout=120)
-        return result.stdout.strip()
-    except subprocess.TimeoutExpired:
-        return "Response timed out"
-    except Exception as e:
-        return f"Error: {e}"
+# Define a function to make API calls to the model server
+def get_model_response(model_name, prompt):
+    url = "http://localhost:11434/api/generate"
+    headers = {
+        "Content-Type": "application/json"
+    }
+    data = {
+        "model": model_name,
+        "prompt": prompt,
+        "temperature": 0,
+        "stream": False
+    }
 
-def run_starcoder2(text):
     try:
-        result = subprocess.run(['ollama', 'run', 'starcoder2', text], capture_output=True, text=True, timeout=120)
-        return result.stdout.strip()
-    except subprocess.TimeoutExpired:
-        return "Response timed out"
+        response = requests.post(url, headers=headers, data=json.dumps(data))
+        if response.status_code == 200:
+            try:
+                response_json = response.json()
+                return response_json.get("response", "No response available")
+            except json.JSONDecodeError as e:
+                return f"Failed to decode JSON: {e}"
+        else:
+            return f"Error: {response.status_code}, {response.text}"
     except Exception as e:
-        return f"Error: {e}"
-
-def run_solar(text):
-    try:
-        result = subprocess.run(['ollama', 'run', 'solar', text], capture_output=True, text=True, timeout=120)
-        return result.stdout.strip()
-    except subprocess.TimeoutExpired:
-        return "Response timed out"
-    except Exception as e:
-        return f"Error: {e}"
-
-def run_mistral(text):
-    try:
-        result = subprocess.run(['ollama', 'run', 'mistral', text], capture_output=True, text=True, timeout=120)
-        return result.stdout.strip()
-    except subprocess.TimeoutExpired:
-        return "Response timed out"
-    except Exception as e:
-        return f"Error: {e}"
+        return f"An error occurred: {e}"
 
 def process_excel_file(file_path, num_rows):
     try:
@@ -50,26 +42,34 @@ def process_excel_file(file_path, num_rows):
         for index, row in df_to_process.iterrows():
             question = row['question']
             combined_text = f"Following is a question posted on a forum, generate a helpful response that is less than 200 words: {question}"
-            codellama_response = run_codellama2(combined_text)
-            starcoder2_response = run_starcoder2(combined_text)
-            solar_response = run_solar(combined_text)
-            mistral_response = run_mistral(combined_text)
 
-            print(f"Prompt: {combined_text}")
-            print(f"Response from codellama: {codellama_response}\n")
-            print(f"Response from starcoder2: {starcoder2_response}\n")
-            print(f"Response from solar: {solar_response}\n")
-            print(f"Response from mistral: {mistral_response}\n")
+            codellama_response = get_model_response("codellama", combined_text)
+            starcoder2_response = get_model_response("starcoder2", combined_text)
+            solar_response = get_model_response("solar", combined_text)
+            mistral_response = get_model_response("mistral", combined_text)
+
+            # Output responses
+            # print(f"Prompt: {combined_text}")
+            # print(f"Response from codellama: {codellama_response}\n")
+            # print(f"Response from starcoder2: {starcoder2_response}\n")
+            # print(f"Response from solar: {solar_response}\n")
+            # print(f"Response from mistral: {mistral_response}\n")
 
             df.at[index, 'codellama_response'] = codellama_response
             df.at[index, 'starcoder2_response'] = starcoder2_response
             df.at[index, 'solar_response'] = solar_response
             df.at[index, 'mistral_response'] = mistral_response
+
+            print(f"Row {index + 1} processed.")
+
             time.sleep(2)
+
         df.to_excel(file_path, index=False)
-        print("Excel file has been updated with LLM responses.")
+        print(f"Excel file has been updated with LLM responses. {num_rows} rows processed.")
 
     except Exception as e:
         print(f"Error processing Excel file: {e}")
 
-process_excel_file('./redditQsAndResponses.xlsx', 5)
+num_rows_to_process = 5  
+
+process_excel_file('./redditQsAndAnswersTrain.xlsx', num_rows_to_process)
