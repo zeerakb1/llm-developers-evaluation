@@ -1,0 +1,9 @@
+pandas
+faiss-cpu
+langchain
+transformers
+sentence-transformers
+bert-score
+nltk
+evaluate
+requests
