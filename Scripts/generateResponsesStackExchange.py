@@ -1,4 +1,3 @@
-
 import pandas as pd
 import requests
 import json
@@ -35,7 +34,7 @@ def process_excel_file(file_path, num_rows):
         df_to_process = df.head(num_rows) 
 
         df['codellama_response'] = ""
-        df['starcoder2_response'] = ""
+        df['mistral_nemo_response'] = ""
         df['solar_response'] = ""
         df['mistral_response'] = ""
 
@@ -45,10 +44,10 @@ def process_excel_file(file_path, num_rows):
             combined_question = f"{question_title} {question_body}"
             combined_text = f"Following is a question posted on a forum, generate a helpful response that is less than 200 words: {combined_question}"
 
-            codellama_response = get_model_response("codellama", combined_text)
-            starcoder2_response = get_model_response("starcoder2", combined_text)
-            solar_response = get_model_response("solar", combined_text)
-            mistral_response = get_model_response("mistral", combined_text)
+            codellama_response = get_model_response("codellama:latest", combined_text)
+            mistral_nemo_response = get_model_response("mistral-nemo:12b-instruct-2407-q4_K_M", combined_text)
+            solar_response = get_model_response("solar:latest", combined_text)
+            mistral_response = get_model_response("mistral:latest", combined_text)
 
             # Output the responses
             # print(f"Prompt: {combined_text}")
@@ -58,7 +57,7 @@ def process_excel_file(file_path, num_rows):
             # print(f"Response from mistral: {mistral_response}\n")
 
             df.at[index, 'codellama_response'] = codellama_response
-            df.at[index, 'starcoder2_response'] = starcoder2_response
+            df.at[index, 'mistral_nemo_response'] = mistral_nemo_response
             df.at[index, 'solar_response'] = solar_response
             df.at[index, 'mistral_response'] = mistral_response
 
@@ -72,6 +71,6 @@ def process_excel_file(file_path, num_rows):
     except Exception as e:
         print(f"Error processing Excel file: {e}")
 
-num_rows_to_process = 5 
+num_rows_to_process = 5000
 
-process_excel_file('./cleanedStackExchangeQsAndAnswersTest.xlsx', num_rows_to_process)
+process_excel_file('../Dataset/DataExcel/stackExchangeQsAndAnswersTest.xlsx', num_rows_to_process)
