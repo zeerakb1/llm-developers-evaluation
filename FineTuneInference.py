@@ -1,3 +1,5 @@
+# For using the fine tuned model on any dataset (question-answer) pair
+
 import pandas as pd
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
