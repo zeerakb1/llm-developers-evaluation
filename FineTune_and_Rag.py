@@ -1,3 +1,4 @@
+# for using the fineTuned model with RAG Architecture
 import pandas as pd
 from langchain.vectorstores import FAISS
 from langchain.embeddings import HuggingFaceEmbeddings
