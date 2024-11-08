@@ -1,3 +1,5 @@
+# Large Language Models as Responders in SE Tasks: A Study on StackExchange
+
 This repository contains the datasets and scripts used in our study exploring the use of Large Language Models (LLMs) as research proxies in software engineering (SE) tasks. The study focuses on evaluating the ability of LLMs to generate human-like responses for technical queries on platforms such as StackExchange. The repository also supports tasks like fine-tuning and retrieval-augmented generation (RAG) for improving response quality.
 
 ---
