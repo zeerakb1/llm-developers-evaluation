@@ -42,10 +42,10 @@ def compare_responses(df):
         col1 = df[answer_column].tolist()
         col2 = df[model].tolist()
 
-        bert_scores = compute_bert_score(col2, col1)  # BERTScore
-        meteor_scores = [compute_meteor_score(col1[i], col2[i]) for i in range(len(col1))]  # METEOR
-        bleu_scores = [compute_bleu_score(col1[i], col2[i]) for i in range(len(col1))]  # BLEU-4
-        cosine_scores = cosine_similarity_score(col1, col2)  # Cosine Similarity
+        bert_scores = compute_bert_score(col2, col1) 
+        meteor_scores = [compute_meteor_score(col1[i], col2[i]) for i in range(len(col1))]
+        bleu_scores = [compute_bleu_score(col1[i], col2[i]) for i in range(len(col1))]
+        cosine_scores = cosine_similarity_score(col1, col2)
 
         avg_bert = float(sum(bert_scores) / len(bert_scores))
         avg_meteor = float(sum(meteor_scores) / len(meteor_scores))
@@ -64,7 +64,7 @@ def compare_responses(df):
 
     return scores_list
 
-# Load the Excel dataset
+
 file_path = 'stackExchangeQsAndAnswersTest.xlsx'
 df = pd.read_excel(file_path)
 
